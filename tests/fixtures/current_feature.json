@@ -1,0 +1,24 @@
+{
+  "attributes": {
+    "poly_IncidentName": "ECHO",
+    "poly_GISAcres": 24.4,
+    "poly_Acres_AutoCalc": 24.435502594791206,
+    "poly_CreateDate": 1782056607385,
+    "poly_DateCurrent": 1792611523622,
+    "poly_PolygonDateTime": 1782056607385,
+    "poly_IRWINID": "{1CC403B0-2A44-4FA4-A820-A9F68BAC31DF}",
+    "attr_IncidentName": "ECHO",
+    "attr_IncidentSize": 24.4,
+    "attr_FinalAcres": null,
+    "attr_PercentContained": null,
+    "attr_FireDiscoveryDateTime": 1782016448000,
+    "attr_IncidentTypeCategory": "WF",
+    "attr_POOState": "US-CA",
+    "attr_POOCounty": "San Diego",
+    "attr_POOProtectingAgency": "CAL FIRE",
+    "attr_POOProtectingUnit": "CASDU",
+    "attr_IrwinID": "{1CC403B0-2A44-4FA4-A820-A9F68BAC31DF}"
+  },
+  "centroid": {"x": -116.5, "y": 33.2},
+  "envelope": {"xmin": -116.6, "ymin": 33.1, "xmax": -116.4, "ymax": 33.3}
+}

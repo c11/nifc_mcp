@@ -1,0 +1,26 @@
+{
+  "attributes": {
+    "poly_IncidentName": "Spout Springs",
+    "poly_GISAcres": 1.700043,
+    "poly_Acres_AutoCalc": 1.7000358136788434,
+    "poly_CreateDate": 1792609439798,
+    "poly_DateCurrent": 1792609439798,
+    "poly_PolygonDateTime": 1792609439798,
+    "poly_IRWINID": "{9B057B06-06BA-4946-A12E-3ED4344F3D00}",
+    "attr_IncidentName": "SPOUT SPRINGS",
+    "attr_IncidentSize": 1.7,
+    "attr_FinalAcres": null,
+    "attr_PercentContained": null,
+    "attr_FireDiscoveryDateTime": 1791233040000,
+    "attr_IncidentTypeCategory": "WF",
+    "attr_POOState": "US-WY",
+    "attr_POOCounty": "Park",
+    "attr_POOJurisdictionalAgency": "USFS",
+    "attr_POOJurisdictionalUnit": "WYSHF",
+    "attr_POOProtectingAgency": "USFS",
+    "attr_POOProtectingUnit": "WYSHF",
+    "attr_IrwinID": null
+  },
+  "centroid": {"x": -109.0, "y": 44.5},
+  "envelope": {"xmin": -109.1, "ymin": 44.4, "xmax": -108.9, "ymax": 44.6}
+}
