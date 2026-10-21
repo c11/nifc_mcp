@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import httpx
 import pytest
+from fastmcp import Client, FastMCP
 
 from wfigs_mcp.arcgis import ArcGISClient, JsonObject
 from wfigs_mcp.cache import TTLCache
@@ -22,11 +23,17 @@ def settings() -> Settings:
         transport="stdio",
         host="127.0.0.1",
         port=8000,
+        streamable_http_path="/mcp",
     )
 
 
-def app_with_client() -> tuple[object, ArcGISClient]:
-    http = httpx.AsyncClient(transport=httpx.MockTransport(lambda _: httpx.Response(500)))
+def app_with_client() -> tuple[FastMCP, ArcGISClient]:
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.url.params.get("returnCountOnly") == "true":
+            return httpx.Response(200, json={"count": 0})
+        return httpx.Response(200, json={"features": []})
+
+    http = httpx.AsyncClient(transport=httpx.MockTransport(handler))
     client = ArcGISClient(http, TTLCache[JsonObject](300))
     service = DatasetService(
         client,
@@ -40,7 +47,8 @@ def app_with_client() -> tuple[object, ArcGISClient]:
 async def test_mcp_lists_domain_tools_with_llm_descriptions() -> None:
     app, client = app_with_client()
 
-    tools = await app.list_tools()  # type: ignore[attr-defined]
+    async with Client(app) as mcp_client:
+        tools = await mcp_client.list_tools()
 
     assert {tool.name for tool in tools} == {
         "search_fires",
@@ -53,7 +61,7 @@ async def test_mcp_lists_domain_tools_with_llm_descriptions() -> None:
     assert "Defaults to active" in descriptions["search_fires"]
     assert "geocoded elsewhere" in descriptions["fires_near"]
     assert "only tool that returns polygon geometry" in descriptions["get_perimeter"]
-    search_schema = next(tool.inputSchema for tool in tools if tool.name == "search_fires")
+    search_schema = next(tool.input_schema for tool in tools if tool.name == "search_fires")
     assert search_schema["properties"]["limit"]["default"] == 25
     await client.aclose()
 
@@ -62,7 +70,22 @@ async def test_mcp_lists_domain_tools_with_llm_descriptions() -> None:
 async def test_mcp_lists_about_and_status_resources() -> None:
     app, client = app_with_client()
 
-    resources = await app.list_resources()  # type: ignore[attr-defined]
+    async with Client(app) as mcp_client:
+        resources = await mcp_client.list_resources()
 
     assert {str(resource.uri) for resource in resources} == {"wfigs://about", "wfigs://status"}
+    await client.aclose()
+
+
+@pytest.mark.asyncio
+async def test_mcp_client_calls_search_tool() -> None:
+    app, client = app_with_client()
+
+    async with Client(app) as mcp_client:
+        result = await mcp_client.call_tool("search_fires", {"limit": 1})
+
+    assert result.is_error is False
+    assert result.structured_content is not None
+    assert result.structured_content["total_count"] == 0
+    assert result.structured_content["fires"] == []
     await client.aclose()

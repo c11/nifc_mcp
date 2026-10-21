@@ -3,7 +3,8 @@
 A read-only Model Context Protocol server for public NIFC WFIGS wildfire
 perimeters. It routes active and year-to-date queries, normalizes the ArcGIS
 schema, performs spatial calculations server-side, and keeps polygon geometry
-out of ordinary responses.
+out of ordinary responses. The MCP application layer uses
+[Prefect FastMCP](https://gofastmcp.com/).
 
 For client setup, tool parameters, prompt examples, and troubleshooting, see
 [docs/USAGE.md](docs/USAGE.md).
@@ -48,8 +49,9 @@ uv run wfigs-mcp --transport streamable-http
 | `WFIGS_MAX_LIMIT` | `200` | Maximum records returned by bounded tools |
 | `WFIGS_VERTEX_CAP` | `10000` | Maximum perimeter vertices after forced simplification |
 | `WFIGS_TRANSPORT` | `stdio` | `stdio` or `streamable-http` |
-| `WFIGS_HOST` | `127.0.0.1` | Streamable HTTP bind address |
-| `WFIGS_PORT` | `8000` | Streamable HTTP port |
+| `WFIGS_HOST` | `127.0.0.1` locally; `0.0.0.0` on Databricks | Streamable HTTP bind address |
+| `WFIGS_PORT` | `8000` or `DATABRICKS_APP_PORT` | Streamable HTTP port |
+| `WFIGS_STREAMABLE_HTTP_PATH` | `/mcp` | Streamable HTTP endpoint path |
 
 Every January, the discovery helper searches ArcGIS Online for the exact title
 `WFIGS <year> Interagency Fire Perimeters to Date`, owned by

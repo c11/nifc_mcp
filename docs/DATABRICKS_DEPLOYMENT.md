@@ -7,13 +7,13 @@ server needs a long-running Streamable HTTP endpoint.
 
 ## Current compatibility status
 
-The project is close to Databricks-compatible, but **the current code is not deployable as-is**.
-Two small runtime adaptations are required before creating the app:
+The project is Databricks Apps compatible. Its runtime configuration already:
 
-1. Listen on the port assigned in `DATABRICKS_APP_PORT` and bind to
-   `0.0.0.0`.
-2. Expose Streamable HTTP at `/api/mcp`, because Databricks token
-   authentication applies to app API routes under `/api/`.
+1. reads the port assigned in `DATABRICKS_APP_PORT` and binds to `0.0.0.0`;
+2. accepts `WFIGS_STREAMABLE_HTTP_PATH=/api/mcp`, because Databricks token
+  authentication applies to app API routes under `/api/`;
+3. maps the public `streamable-http` CLI option to Prefect FastMCP's `http`
+  transport.
 
 The rest of the project already fits Databricks Apps:
 
@@ -64,12 +64,12 @@ databricks auth login --host https://<workspace-url> --profile wfigs
 Do not deploy `.venv`, `dist`, caches, or local environment files. They are
 already excluded by this repository's `.gitignore`.
 
-## 1. Add Databricks runtime compatibility
+## 1. Verify Databricks runtime compatibility
 
 ### Use the Databricks-assigned port
 
-Update `Settings.from_env()` in `src/wfigs_mcp/config.py` so Databricks's port
-takes precedence over the local default:
+`Settings.from_env()` in `src/wfigs_mcp/config.py` gives Databricks's assigned
+port precedence over the local default:
 
 ```python
 databricks_port = os.getenv("DATABRICKS_APP_PORT")
@@ -88,33 +88,30 @@ return cls(
 `127.0.0.1:8000`; inside Databricks Apps it uses `0.0.0.0` and the assigned
 port.
 
-### Move the MCP endpoint under `/api/`
+### Place the MCP endpoint under `/api/`
 
 Databricks supports token authentication for app endpoints under `/api/`.
-FastMCP's default Streamable HTTP path is `/mcp`, so configure it when creating
-the app in `src/wfigs_mcp/server.py`:
+Prefect FastMCP's default HTTP path is `/mcp`; the server passes the configured
+path when starting the standalone FastMCP HTTP transport:
 
 ```python
-import os
-
-app = FastMCP(
-    "NIFC WFIGS Wildfire Perimeters",
+app.run(
+    transport="http",
     host=settings.host,
     port=settings.port,
-    lifespan=lifespan,
-    streamable_http_path=os.getenv("WFIGS_STREAMABLE_HTTP_PATH", "/mcp"),
+    path=settings.streamable_http_path,
 )
 ```
 
-This preserves `/mcp` locally and lets Databricks set `/api/mcp` through an
-environment variable.
+The default remains `/mcp` locally. The `app.yaml` setting below changes it to
+`/api/mcp` on Databricks.
 
-Add tests for both environment behaviors before deployment:
+The test suite covers both environment behaviors:
 
 - no Databricks variables: `127.0.0.1:8000` and `/mcp`
 - `DATABRICKS_APP_PORT=12345`: `0.0.0.0:12345` and `/api/mcp` when configured
 
-Run the existing checks after editing:
+Run the checks before deployment:
 
 ```bash
 uv run pytest -m "not live"
@@ -139,9 +136,9 @@ env:
     value: /api/mcp
 ```
 
-The code change above automatically reads `DATABRICKS_APP_PORT`, so do not
-hard-code a port in `app.yaml`. Databricks runs command arrays directly rather
-than through a shell.
+The server automatically reads `DATABRICKS_APP_PORT`, so do not hard-code a
+port in `app.yaml`. Databricks runs command arrays directly rather than through
+a shell.
 
 Optional WFIGS settings can be added to `env`, for example:
 

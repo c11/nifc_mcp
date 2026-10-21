@@ -31,9 +31,11 @@ class Settings:
     transport: str
     host: str
     port: int
+    streamable_http_path: str
 
     @classmethod
     def from_env(cls) -> Settings:
+        databricks_port = os.getenv("DATABRICKS_APP_PORT")
         return cls(
             current_layer_url=os.getenv("WFIGS_CURRENT_LAYER_URL", CURRENT_LAYER_URL),
             ytd_layer_url=os.getenv("WFIGS_YTD_LAYER_URL"),
@@ -43,8 +45,11 @@ class Settings:
             max_limit=int(os.getenv("WFIGS_MAX_LIMIT", "200")),
             vertex_cap=int(os.getenv("WFIGS_VERTEX_CAP", "10000")),
             transport=os.getenv("WFIGS_TRANSPORT", "stdio"),
-            host=os.getenv("WFIGS_HOST", "127.0.0.1"),
-            port=int(os.getenv("WFIGS_PORT", "8000")),
+            host=os.getenv(
+                "WFIGS_HOST", "0.0.0.0" if databricks_port else "127.0.0.1"
+            ),
+            port=int(os.getenv("WFIGS_PORT", databricks_port or "8000")),
+            streamable_http_path=os.getenv("WFIGS_STREAMABLE_HTTP_PATH", "/mcp"),
         )
 
 

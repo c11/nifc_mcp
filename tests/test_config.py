@@ -4,9 +4,40 @@ import httpx
 import pytest
 import respx
 
-from wfigs_mcp.config import ARCGIS_SEARCH_URL, ConfigurationError, resolve_ytd_layer_url
+from wfigs_mcp.config import (
+    ARCGIS_SEARCH_URL,
+    ConfigurationError,
+    Settings,
+    resolve_ytd_layer_url,
+)
 
 SERVICE_URL = "https://services.example.test/WFIGS_Interagency_Perimeters_YearToDate/FeatureServer"
+
+
+def test_settings_use_local_http_defaults(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("DATABRICKS_APP_PORT", raising=False)
+    monkeypatch.delenv("WFIGS_HOST", raising=False)
+    monkeypatch.delenv("WFIGS_PORT", raising=False)
+    monkeypatch.delenv("WFIGS_STREAMABLE_HTTP_PATH", raising=False)
+
+    settings = Settings.from_env()
+
+    assert settings.host == "127.0.0.1"
+    assert settings.port == 8000
+    assert settings.streamable_http_path == "/mcp"
+
+
+def test_settings_use_databricks_runtime_defaults(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("DATABRICKS_APP_PORT", "12345")
+    monkeypatch.delenv("WFIGS_HOST", raising=False)
+    monkeypatch.delenv("WFIGS_PORT", raising=False)
+    monkeypatch.setenv("WFIGS_STREAMABLE_HTTP_PATH", "/api/mcp")
+
+    settings = Settings.from_env()
+
+    assert settings.host == "0.0.0.0"
+    assert settings.port == 12345
+    assert settings.streamable_http_path == "/api/mcp"
 
 
 @pytest.mark.asyncio

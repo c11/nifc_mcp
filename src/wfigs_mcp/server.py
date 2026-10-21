@@ -7,10 +7,10 @@ import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from datetime import date
-from typing import Literal, cast
+from typing import Literal
 
 import httpx
-from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
 
 from .arcgis import ArcGISClient, JsonObject
 from .cache import TTLCache
@@ -23,16 +23,14 @@ LOGGER = logging.getLogger("wfigs_mcp")
 
 def build_app(service: DatasetService, settings: Settings) -> FastMCP:
     @asynccontextmanager
-    async def lifespan(_: FastMCP) -> AsyncIterator[None]:
+    async def lifespan(_: FastMCP) -> AsyncIterator[dict[str, object]]:
         try:
-            yield
+            yield {}
         finally:
             await service.client.aclose()
 
     app = FastMCP(
         "NIFC WFIGS Wildfire Perimeters",
-        host=settings.host,
-        port=settings.port,
         lifespan=lifespan,
     )
 
@@ -257,11 +255,18 @@ def main() -> None:
     transport = args.transport or settings.transport
     if transport not in {"stdio", "streamable-http"}:
         parser.error("transport must be 'stdio' or 'streamable-http'")
-    selected_transport = cast(Literal["stdio", "streamable-http"], transport)
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     service = asyncio.run(create_service(settings))
     app = build_app(service, settings)
-    app.run(transport=selected_transport)
+    if transport == "stdio":
+        app.run(transport="stdio")
+    else:
+        app.run(
+            transport="http",
+            host=settings.host,
+            port=settings.port,
+            path=settings.streamable_http_path,
+        )
 
 
 if __name__ == "__main__":
