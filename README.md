@@ -8,6 +8,10 @@ out of ordinary responses.
 For client setup, tool parameters, prompt examples, and troubleshooting, see
 [docs/USAGE.md](docs/USAGE.md).
 
+For Databricks Apps architecture, required compatibility changes, deployment,
+OAuth, and operations, see
+[docs/DATABRICKS_DEPLOYMENT.md](docs/DATABRICKS_DEPLOYMENT.md).
+
 Perimeters can lag ground conditions by a day or more. This server is not a
 source of evacuation guidance. Follow local emergency officials and consult
 [InciWeb](https://inciweb.wildfire.gov).

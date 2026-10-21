@@ -3,6 +3,9 @@
 This guide explains how to connect an MCP client to the WFIGS server, ask
 wildfire questions, choose the right tool, and interpret the results.
 
+For remote deployment on Databricks Apps, see
+[DATABRICKS_DEPLOYMENT.md](DATABRICKS_DEPLOYMENT.md).
+
 The server is read-only. It queries public NIFC WFIGS perimeter data and does
 not modify upstream records.
 
