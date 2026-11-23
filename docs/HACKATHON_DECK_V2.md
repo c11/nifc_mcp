@@ -473,12 +473,12 @@ lat=39.76, lon=-121.62, radius_miles=30, scope="active"
   <div class="card">
     <div class="metric">26</div>
     <strong>offline tests passing</strong><br/>
-    <span class="small">routing, paging, retries, normalization, geometry, HTTP, and size limits</span>
+    <span class="small">mocked HTTP, normalization, geometry, routing, and MCP contracts</span>
   </div>
   <div class="card">
-    <div class="metric">5 min</div>
-    <strong>default TTL cache</strong><br/>
-    <span class="small">reduced upstream load with honest cache timestamps</span>
+    <div class="metric">18</div>
+    <strong>live correctness cases passed</strong><br/>
+    <span class="small">real NIFC data across tools, resources, and both datasets</span>
   </div>
   <div class="card">
     <div class="metric">2</div>
@@ -491,7 +491,38 @@ lat=39.76, lon=-121.62, radius_miles=30, scope="active"
 - <span class="check">PASS</span> strict MyPy
 - <span class="check">PASS</span> default non-geometry response size assertion
 - <span class="check">PASS</span> automatic current-year discovery with fail-closed validation
+- <span class="check">PASS</span> live tool, metadata, fallback, geometry, freshness, and MCP checks
 - <span class="check">READY</span> Databricks Apps deployment contract
+
+---
+
+## Live evaluation: correctness and measured performance
+
+<div class="cards">
+  <div class="card">
+    <div class="metric">18 / 18</div>
+    <strong>live correctness checks</strong><br/>
+    <span class="small">metadata, Current/YTD search, filters, ID/name lookup, fallback, 3 geometry formats, proximity, 4 summaries, cache, MCP resources</span>
+  </div>
+  <div class="card">
+    <div class="metric">33 ms</div>
+    <strong>median search latency</strong><br/>
+    <span class="small">10 uncached YearToDate searches; at most 2 concurrent</span>
+  </div>
+  <div class="card">
+    <div class="metric">10.5/s</div>
+    <strong>observed throughput</strong><br/>
+    <span class="small">20 upstream HTTP attempts; 0 failed searches; no local cache hits</span>
+  </div>
+</div>
+
+### One bounded benchmark run · 2026-11-22
+
+| Tail latency | Local CPU time | Process peak RSS |
+|---:|---:|---:|
+| **820 ms p95** | **0.041 s** | **78.8 MiB** |
+
+<span class="small">p95 is nearest-rank over only 10 samples (equal to the max). Single run—not sustained capacity, an SLA, or NIFC server resource usage.</span>
 
 ---
 

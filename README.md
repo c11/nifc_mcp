@@ -135,11 +135,24 @@ uv run mypy
 For the evaluation setup, concrete test inputs, latest verified results, and
 limitations, see [docs/EVALUATION.md](docs/EVALUATION.md).
 
-Live tests are opt-in because they call continuously changing public services:
+The 18 live correctness cases are opt-in because they call continuously changing
+public services:
 
 ```bash
-WFIGS_RUN_LIVE=1 uv run pytest -m live
+WFIGS_RUN_LIVE=1 uv run pytest -m 'live and not performance' -v
 ```
+
+A separately opt-in benchmark measures 10 uncached searches with at most two
+concurrent requests, latency, achieved throughput, CPU time, and process peak
+RSS (macOS/Linux). Run it in a fresh process and use `-s` to see the JSON report:
+
+```bash
+WFIGS_RUN_LIVE=1 WFIGS_RUN_PERFORMANCE=1 \
+  uv run pytest tests/test_live_performance.py -v -s
+```
+
+This is a bounded measurement, not a sustained load test or a production SLA.
+See [docs/EVALUATION.md](docs/EVALUATION.md) for actual results and limitations.
 
 Inspect the MCP schemas and resources interactively:
 

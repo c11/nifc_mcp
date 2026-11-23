@@ -36,7 +36,10 @@ packages = ["src/wfigs_mcp"]
 [tool.pytest.ini_options]
 addopts = "-ra"
 asyncio_mode = "auto"
-markers = ["live: opt-in tests against public NIFC services"]
+markers = [
+    "live: opt-in tests against public NIFC services",
+    "performance: separately opt-in bounded live performance measurements",
+]
 
 [tool.ruff]
 line-length = 100
