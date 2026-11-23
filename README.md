@@ -132,6 +132,9 @@ uv run ruff check .
 uv run mypy
 ```
 
+For the evaluation setup, concrete test inputs, latest verified results, and
+limitations, see [docs/EVALUATION.md](docs/EVALUATION.md).
+
 Live tests are opt-in because they call continuously changing public services:
 
 ```bash
