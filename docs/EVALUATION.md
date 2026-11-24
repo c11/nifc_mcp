@@ -1,9 +1,8 @@
-# WFIGS MCP evaluation
+# Wildfire MCP evaluation
 
 ## Scope and method
 
-This report describes the automated checks actually present in the repository
-and local runs on **2026-11-22**. The project is tested with pytest,
+The project is tested with pytest,
 pytest-asyncio, and respx; test and lint/type-check dependencies are declared
 in `pyproject.toml`.
 
@@ -60,8 +59,7 @@ incidents or a measurement of live-service behavior.
 ### Current implementation: verified results
 
 The current suite contains **45 collected cases**: 26 offline cases,
-18 live correctness cases, and one live performance case. These were executed
-separately on **2026-11-22 Pacific time**:
+18 live correctness cases, and one live performance case. 
 
 | Command | Observed result |
 |---|---|
@@ -158,9 +156,6 @@ It measures `DatasetService.search_fires`, not a deployed HTTP MCP endpoint:
   an unapproved service-level objective.
 
 #### Measured performance and resource usage
-
-Benchmark start: **2026-11-23T04:25:04.986235+00:00** (2026-11-22 Pacific).
-Runtime: **macOS, Python 3.12.12**, pytest 9.1.1.
 
 | Metric | Observed value |
 |---|---:|
